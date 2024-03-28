@@ -61,8 +61,15 @@ class _MeetingWidgetState extends State<MeetingWidget> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white, backgroundColor: Colors.blue, // foreground
                     ),
-                    onPressed: () => {
-                      {joinMeeting(context)}
+                    onPressed: () {
+                      joinMeeting(
+                        context,
+                        displayName: 'Hamada Mohamed',
+                        meetingId: '83395652220',
+                        password: 'IamThe',
+                        zoomAccessToken:
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZGtLZXkiOiJqRm1DMkhVT1FsNkpWYl9QSFBYeE5RIiwiYXBwS2V5IjoiakZtQzJIVU9RbDZKVmJfUEhQWHhOUSIsIm1uIjoiODMzOTU2NTIyMjAiLCJyb2xlIjoiMCIsImlhdCI6MTcxMTYzNDIyNCwiZXhwIjoxNzExNjQxNDI0LCJ0b2tlbkV4cCI6MTcxMTY0MTQyNH0.vfjmXtEt_t1C8g4dp8BjWe7XSEHlj26QEDjSrO-f-pQ',
+                      );
                     },
                     child: const Text('Join'),
                   );
@@ -107,9 +114,13 @@ class _MeetingWidgetState extends State<MeetingWidget> {
     );
   }
 
-  //API KEY & SECRET is required for below methods to work
-  //Join Meeting With Meeting ID & Password
-  joinMeeting(BuildContext context) {
+  joinMeeting(
+    BuildContext context, {
+    required String meetingId,
+    required String zoomAccessToken,
+    required String displayName,
+    required String password,
+  }) {
     bool _isMeetingEnded(String status) {
       var result = false;
 
@@ -122,81 +133,143 @@ class _MeetingWidgetState extends State<MeetingWidget> {
 
       return result;
     }
+    ZoomOptions zoomOptions = ZoomOptions(
+      domain: "zoom.us",
+      jwtToken: zoomAccessToken,
+    );
+    var meetingOptions = ZoomMeetingOptions(
+      displayName: displayName,
+      zoomAccessToken: zoomAccessToken,
 
-    if (meetingIdController.text.isNotEmpty &&
-        meetingPasswordController.text.isNotEmpty) {
-      ZoomOptions zoomOptions = ZoomOptions(
-        domain: "zoom.us",
-        appKey: "XKE4uWfeLwWEmh78YMbC6mqKcF8oM4YHTr9I", //API KEY FROM ZOOM
-        appSecret:
-            "bT7N61pQzaLXU6VLj9TVl7eYuLbqAiB0KAdb", //API SECRET FROM ZOOM
-      );
-      var meetingOptions = ZoomMeetingOptions(
-          userId: 'username',
+      /// pass username for join meeting only --- Any name eg:- EVILRATT.
+      // meetingId: meetingIdController.text,
+        meetingId: meetingId,
 
-          /// pass username for join meeting only --- Any name eg:- EVILRATT.
-          meetingId: meetingIdController.text,
+        /// pass meeting id for join meeting only
+        // meetingPassword: meetingPasswordController.text,
+        meetingPassword: password,
 
-          /// pass meeting id for join meeting only
-          meetingPassword: meetingPasswordController.text,
+        /// pass meeting password for join meeting only
+        disableDialIn: "true",
+        disableDrive: "true",
+        disableInvite: "true",
+        disableShare: "true",
+        disableTitlebar: "false",
+        viewOptions: "true",
+        noAudio: "false",
+        noDisconnectAudio: "false");
 
-          /// pass meeting password for join meeting only
-          disableDialIn: "true",
-          disableDrive: "true",
-          disableInvite: "true",
-          disableShare: "true",
-          disableTitlebar: "false",
-          viewOptions: "true",
-          noAudio: "false",
-          noDisconnectAudio: "false");
-
-      var zoom = ZoomView();
-      zoom.initZoom(zoomOptions).then((results) {
-        if (results[0] == 0) {
-          zoom.onMeetingStatus().listen((status) {
-            if (kDebugMode) {
-              print(
-                  "[Meeting Status Stream] : " + status[0] + " - " + status[1]);
-            }
-            if (_isMeetingEnded(status[0])) {
-              if (kDebugMode) {
-                print("[Meeting Status] :- Ended");
-              }
-              timer.cancel();
-            }
-          });
+    var zoom = ZoomView();
+    zoom.initZoom(zoomOptions).then((results) {
+      if (results[0] == 0) {
+        zoom.onMeetingStatus().listen((status) {
           if (kDebugMode) {
-            print("listen on event channel");
+            print(
+                "[Meeting Status Stream] : " + status[0] + " - " + status[1]);
           }
-          zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
-            timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-              zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
-                if (kDebugMode) {
-                  print("[Meeting Status Polling] : " +
-                      status[0] +
-                      " - " +
-                      status[1]);
-                }
-              });
+          if (_isMeetingEnded(status[0])) {
+            if (kDebugMode) {
+              print("[Meeting Status] :- Ended");
+            }
+            timer.cancel();
+          }
+        });
+        if (kDebugMode) {
+          print("listen on event channel");
+        }
+        zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
+          timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+            zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
+              if (kDebugMode) {
+                print("[Meeting Status Polling] : " +
+                    status[0] +
+                    " - " +
+                    status[1]);
+              }
             });
           });
-        }
-      }).catchError((error) {
-        if (kDebugMode) {
-          print("[Error Generated] : " + error);
-        }
-      });
-    } else {
-      if (meetingIdController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Enter a valid meeting id to continue."),
-        ));
-      } else if (meetingPasswordController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Enter a meeting password to start."),
-        ));
+        });
       }
-    }
+    }).catchError((error) {
+      if (kDebugMode) {
+        print("[Error Generated] : " + error);
+      }
+    });
+    // if (meetingIdController.text.isNotEmpty &&
+    //     meetingPasswordController.text.isNotEmpty) {
+    //   ZoomOptions zoomOptions = ZoomOptions(
+    //     domain: "zoom.us",
+    //     jwtToken: zoomAccessToken,
+    //   );
+    //   var meetingOptions = ZoomMeetingOptions(
+    //       // userId: 'username',
+    //
+    //       /// pass username for join meeting only --- Any name eg:- EVILRATT.
+    //       // meetingId: meetingIdController.text,
+    //       meetingId: meetingId,
+    //
+    //       /// pass meeting id for join meeting only
+    //       // meetingPassword: meetingPasswordController.text,
+    //       meetingPassword: password,
+    //
+    //       /// pass meeting password for join meeting only
+    //       disableDialIn: "true",
+    //       disableDrive: "true",
+    //       disableInvite: "true",
+    //       disableShare: "true",
+    //       disableTitlebar: "false",
+    //       viewOptions: "true",
+    //       noAudio: "false",
+    //       noDisconnectAudio: "false");
+    //
+    //   var zoom = ZoomView();
+    //   zoom.initZoom(zoomOptions).then((results) {
+    //     if (results[0] == 0) {
+    //       zoom.onMeetingStatus().listen((status) {
+    //         if (kDebugMode) {
+    //           print(
+    //               "[Meeting Status Stream] : " + status[0] + " - " + status[1]);
+    //         }
+    //         if (_isMeetingEnded(status[0])) {
+    //           if (kDebugMode) {
+    //             print("[Meeting Status] :- Ended");
+    //           }
+    //           timer.cancel();
+    //         }
+    //       });
+    //       if (kDebugMode) {
+    //         print("listen on event channel");
+    //       }
+    //       zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
+    //         timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    //           zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
+    //             if (kDebugMode) {
+    //               print("[Meeting Status Polling] : " +
+    //                   status[0] +
+    //                   " - " +
+    //                   status[1]);
+    //             }
+    //           });
+    //         });
+    //       });
+    //     }
+    //   }).catchError((error) {
+    //     if (kDebugMode) {
+    //       print("[Error Generated] : " + error);
+    //     }
+    //   });
+    // }
+    // else {
+    //   if (meetingIdController.text.isEmpty) {
+    //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //       content: Text("Enter a valid meeting id to continue."),
+    //     ));
+    //   } else if (meetingPasswordController.text.isEmpty) {
+    //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //       content: Text("Enter a meeting password to start."),
+    //     ));
+    //   }
+    // }
   }
 
   //Start Meeting With Random Meeting ID ----- Emila & Password For Zoom is required.
@@ -222,7 +295,7 @@ class _MeetingWidgetState extends State<MeetingWidget> {
           "bT7N61pQzaLXU6VLj9TVl7eYuLbqAiB0KAdb", //API SECRET FROM ZOOM -- SDK SECRET
     );
     var meetingOptions = ZoomMeetingOptions(
-        userId: 'evilrattdeveloper@gmail.com', //pass host email for zoom
+        // userId: 'evilrattdeveloper@gmail.com', //pass host email for zoom
         userPassword: 'Dlinkmoderm0641', //pass host password for zoom
         disableDialIn: "false",
         disableDrive: "false",
@@ -318,7 +391,7 @@ class _MeetingWidgetState extends State<MeetingWidget> {
           "bT7N61pQzaLXU6VLj9TVl7eYuLbqAiB0KAdb", //API SECRET FROM ZOOM -- SDK SECRET
     );
     var meetingOptions = ZoomMeetingOptions(
-        userId: 'evilrattdeveloper@gmail.com', //pass host email for zoom
+        // userId: 'evilrattdeveloper@gmail.com', //pass host email for zoom
         userPassword: 'Dlinkmoderm0641', //pass host password for zoom
         meetingId: meetingIdController.text, //
         disableDialIn: "false",

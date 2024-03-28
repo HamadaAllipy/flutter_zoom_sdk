@@ -7,6 +7,7 @@ class ZoomOptions {
 
   /// --JWT key for web / SDK key for iOS / Android
   String? appSecret;
+  String? jwtToken;
 
   /// --JWT secret for web / SDK secret for iOS / Android
   String? language;
@@ -94,6 +95,7 @@ class ZoomOptions {
   ZoomOptions(
       {required this.domain,
       this.appKey,
+      this.jwtToken,
       this.appSecret,
       this.language = "en-US",
       this.showMeetingHeader = true,
@@ -137,9 +139,7 @@ class ZoomOptions {
 
 /// Basic Zoom Meeting Options required for plugin (WEB, iOS, Android)
 class ZoomMeetingOptions {
-  String? userId;
 
-  /// Username For Join Meeting & Host Email For Start Meeting
   String? userPassword;
 
   /// Host Password For Start Meeting
@@ -190,7 +190,6 @@ class ZoomMeetingOptions {
   /// JWT API Signature For Web Only
 
   ZoomMeetingOptions({
-    this.userId,
     this.userPassword,
     this.displayName,
     this.meetingId,

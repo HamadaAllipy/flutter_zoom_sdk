@@ -75,12 +75,18 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
 
             let auth = MobileRTC.shared().getAuthService()
             auth?.delegate = self.authenticationDelegate.onAuth(result)
-            if let appKey = arguments["appKey"] {
-                auth?.clientKey = appKey
-            }
-            if let appSecret = arguments["appSecret"] {
-                auth?.clientSecret = appSecret
-            }
+             if let jwtToken = arguments["jwtToken"] {
+                            auth?.jwtToken = jwtToken
+                        }
+//            auth?.jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZGtLZXkiOiJqRm1DMkhVT1FsNkpWYl9QSFBYeE5RIiwiYXBwS2V5IjoiakZtQzJIVU9RbDZKVmJfUEhQWHhOUSIsIm1uIjoiODc0MjMwNzM5OTAiLCJyb2xlIjoiMCIsImlhdCI6MTcxMTYzMTIzMiwiZXhwIjoxNzExNjM4NDMyLCJ0b2tlbkV4cCI6MTcxMTYzODQzMn0.uQW0vavojuOPP59sobOEhgdY30WB5n3mdtcBbVX3d-4"
+            
+//            if let appKey = arguments["appKey"] {
+//                
+//                auth?.clientKey = appKey
+//            }
+//            if let appSecret = arguments["appSecret"] {
+//                auth?.clientSecret = appSecret
+//            }
 
             auth?.sdkAuth()
         }
@@ -93,7 +99,7 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
                   self.startMeeting(call:call, result:result);
               }else{
                   let arguments = call.arguments as! Dictionary<String, String?>
-                  authService?.login(withEmail: arguments["userId"]!!, password: arguments["userPassword"]!!, rememberMe: false)
+//                  authService?.login(withEmail: arguments["userId"]!!, password: arguments["userPassword"]!!, rememberMe: false)
                   if ((authService?.isLoggedIn()) == true) {
                       self.startMeeting(call:call, result:result);
                   }
@@ -108,7 +114,7 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
                     self.startMeetingNormalInternal(call:call, result:result);
                 }else{
                     let arguments = call.arguments as! Dictionary<String, String?>
-                    authService?.login(withEmail: arguments["userId"]!!, password: arguments["userPassword"]!!, rememberMe: false)
+//                    authService?.login(withEmail: arguments["userId"]!!, password: arguments["userPassword"]!!, rememberMe: false)
                     if ((authService?.isLoggedIn()) == true) {
                         self.startMeetingNormalInternal(call:call, result:result);
                     }
@@ -170,6 +176,7 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
                 
                 //Setting up Custom Join Meeting parameter
                 joinMeetingParameters.userName = arguments["userId"]!!
+                joinMeetingParameters.zak = arguments["zoomAccessToken"]!!
                 joinMeetingParameters.meetingNumber = arguments["meetingId"]!!
 
                 let hasPassword = arguments["meetingPassword"]! != nil
