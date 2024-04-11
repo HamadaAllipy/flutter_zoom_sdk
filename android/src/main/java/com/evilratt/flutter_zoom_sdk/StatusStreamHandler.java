@@ -9,12 +9,15 @@ import us.zoom.sdk.MeetingError;
 import us.zoom.sdk.MeetingService;
 import us.zoom.sdk.MeetingServiceListener;
 import us.zoom.sdk.MeetingStatus;
+import us.zoom.sdk.MeetingParameter;
 
 /**
  * This class implements the handler for the Zoom meeting event in the flutter event channel
  */
+
+
 public class StatusStreamHandler implements EventChannel.StreamHandler {
-    private final MeetingService meetingService;
+    private MeetingService meetingService;
     private MeetingServiceListener statusListener;
 
     public StatusStreamHandler(MeetingService meetingService) {
@@ -23,15 +26,22 @@ public class StatusStreamHandler implements EventChannel.StreamHandler {
 
     @Override
     public void onListen(Object arguments, final EventChannel.EventSink events) {
-        statusListener = (meetingStatus, errorCode, internalErrorCode) -> {
+        statusListener = new MeetingServiceListener() {
+            @Override
+            public void onMeetingStatusChanged(MeetingStatus meetingStatus, int errorCode, int internalErrorCode) {
 
-            if(meetingStatus == MeetingStatus.MEETING_STATUS_FAILED &&
-                    errorCode == MeetingError.MEETING_ERROR_CLIENT_INCOMPATIBLE) {
-                events.success(Arrays.asList("MEETING_STATUS_UNKNOWN", "Version of ZoomSDK is too low"));
-                return;
+                if(meetingStatus == MeetingStatus.MEETING_STATUS_FAILED &&
+                        errorCode == MeetingError.MEETING_ERROR_CLIENT_INCOMPATIBLE) {
+                    events.success(Arrays.asList("MEETING_STATUS_UNKNOWN", "Version of ZoomSDK is too low"));
+                    return;
+                }
+
+                events.success(getMeetingStatusMessage(meetingStatus));
             }
+            @Override
+	        public void onMeetingParameterNotification(MeetingParameter meetingParameter) {
 
-            events.success(getMeetingStatusMessage(meetingStatus));
+	        }
         };
 
         this.meetingService.addListener(statusListener);
@@ -48,7 +58,7 @@ public class StatusStreamHandler implements EventChannel.StreamHandler {
 
         message[0] = meetingStatus != null ? meetingStatus.name() : "";
 
-        switch (Objects.requireNonNull(meetingStatus)) {
+        switch (meetingStatus) {
             case MEETING_STATUS_CONNECTING:
                 message[1] = "Connect to the meeting server.";
                 break;
