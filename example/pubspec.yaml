@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  dart_jsonwebtoken: ^2.13.0
   flutter_zoom_sdk:
     # When depending on this package from a real application you should use:
     #   flutter_zoom_sdk: ^x.y.z

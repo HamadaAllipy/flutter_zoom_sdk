@@ -55,7 +55,7 @@ class ZoomView extends ZoomPlatform {
   @override
   Future<bool> joinMeeting(ZoomMeetingOptions options) async {
     var optionMap = <String, String?>{};
-    optionMap.putIfAbsent("zoomAccessToken", () => options.zoomAccessToken);
+    optionMap.putIfAbsent("zoomAccessToken", () => options.zakToken);
     optionMap.putIfAbsent("userId", () => options.displayName);
     optionMap.putIfAbsent("meetingId", () => options.meetingId);
     optionMap.putIfAbsent("meetingPassword", () => options.meetingPassword);
@@ -77,6 +77,8 @@ class ZoomView extends ZoomPlatform {
   @override
   Future<List> startMeeting(ZoomMeetingOptions options) async {
     var optionMap = <String, String?>{};
+    optionMap.putIfAbsent("zoomAccessToken", () => options.zakToken);
+    optionMap.putIfAbsent("meetingId", () => options.meetingId);
     optionMap.putIfAbsent("userId", () => options.displayName);
     optionMap.putIfAbsent("userPassword", () => options.userPassword);
     optionMap.putIfAbsent("disableDialIn", () => options.disableDialIn);
@@ -84,12 +86,13 @@ class ZoomView extends ZoomPlatform {
     optionMap.putIfAbsent("disableInvite", () => options.disableInvite);
     optionMap.putIfAbsent("disableShare", () => options.disableShare);
     optionMap.putIfAbsent("disableTitlebar", () => options.disableTitlebar);
+    optionMap.putIfAbsent("disableMinimizeMeeting", () => options.disableMinimizeMeeting);
     optionMap.putIfAbsent("viewOptions", () => options.viewOptions);
     optionMap.putIfAbsent("noDisconnectAudio", () => options.noDisconnectAudio);
     optionMap.putIfAbsent("noAudio", () => options.noAudio);
 
     return await channel
-        .invokeMethod<List>('login', optionMap)
+        .invokeMethod<List>('startMeeting', optionMap)
         .then<List>((List? value) => value ?? List.empty());
   }
 
@@ -116,5 +119,13 @@ class ZoomView extends ZoomPlatform {
     return await channel
         .invokeMethod<List>('meeting_details')
         .then<List>((List? value) => value ?? List.empty());
+  }
+
+
+  @override
+  Future<bool> unInitialize() async {
+    return await channel
+        .invokeMethod<bool>('unInitialize')
+        .then<bool>((bool? value) => value ?? false);
   }
 }

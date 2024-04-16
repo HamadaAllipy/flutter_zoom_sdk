@@ -48,4 +48,10 @@ abstract class ZoomPlatform extends PlatformInterface {
   Future<List> meetinDetails() async {
     throw UnimplementedError('meetingDetails() has not been implemented.');
   }
+
+
+  /// Flutter Zoom SDK Un initialize
+  Future<bool> unInitialize() async {
+    throw UnimplementedError('meetingDetails() has not been implemented.');
+  }
 }

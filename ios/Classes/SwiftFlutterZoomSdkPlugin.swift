@@ -33,6 +33,8 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
               self.startMeetingNormal(call: call, result: result)
           case "meeting_status":
               self.meetingStatus(call: call, result: result)
+          case "startMeeting":
+                        self.startMeeting(call: call, result: result)
           case "meeting_details":
               self.meetingDetails(call: call, result: result)
           default:
@@ -177,6 +179,7 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
                 //Setting up Custom Join Meeting parameter
                 joinMeetingParameters.userName = arguments["userId"]!!
                 joinMeetingParameters.zak = arguments["zoomAccessToken"]!!
+                
                 joinMeetingParameters.meetingNumber = arguments["meetingId"]!!
 
                 let hasPassword = arguments["meetingPassword"]! != nil
@@ -198,41 +201,60 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
 
         // Basic Start Meeting Function called on startMeeting triggered via login function
         public func startMeeting(call: FlutterMethodCall, result: FlutterResult) {
+            
+            print("START MEETING WITH HAMADA ....")
 
             let meetingService = MobileRTC.shared().getMeetingService()
             let meetingSettings = MobileRTC.shared().getMeetingSettings()
             let authService = MobileRTC.shared().getAuthService()
            
             if meetingService != nil{
-                if ((authService?.isLoggedIn()) == true) {
+//                if ((authService?.isLoggedIn()) == true) {
                     let arguments = call.arguments as! Dictionary<String, String?>
 
                     //Setting up meeting settings for zoom sdk
+                meetingSettings?.disableMinimizeMeeting(parseBoolean(data: arguments["disableMinimizeMeeting"]!, defaultValue: false))
                     meetingSettings?.disableDriveMode(parseBoolean(data: arguments["disableDrive"]!, defaultValue: false))
                     meetingSettings?.disableCall(in: parseBoolean(data: arguments["disableDialIn"]!, defaultValue: false))
                     meetingSettings?.setAutoConnectInternetAudio(parseBoolean(data: arguments["noDisconnectAudio"]!, defaultValue: false))
                     meetingSettings?.setMuteAudioWhenJoinMeeting(parseBoolean(data: arguments["noAudio"]!, defaultValue: false))
                     meetingSettings?.meetingShareHidden = parseBoolean(data: arguments["disableShare"]!, defaultValue: false)
                     meetingSettings?.meetingInviteHidden = parseBoolean(data: arguments["disableDrive"]!, defaultValue: false)
-                    let viewopts = parseBoolean(data:arguments["viewOptions"]!, defaultValue: false)
-                    if viewopts {
-                        meetingSettings?.meetingTitleHidden = true
-                        meetingSettings?.meetingPasswordHidden = true
-                    }
-                    
-                    //Setting up Start Meeting parameter
-                    let startMeetingParameters = MobileRTCMeetingStartParam4LoginlUser()
-                    
-                    //Starting the meeting and storing the response
-                    let response = meetingService?.startMeeting(with: startMeetingParameters)
-
-                    if let response = response {
-                        print("Got response from start: \(response)")
-                    }
-                    result(["MEETING SUCCESS", "200"])
-                }else{
-                    result(["LOGIN REQUIRED", "001"])
+                let viewopts = parseBoolean(data:arguments["viewOptions"]!, defaultValue: false)
+                if viewopts {
+                    meetingSettings?.meetingTitleHidden = true
+                    meetingSettings?.meetingPasswordHidden = true
                 }
+                
+                //Setting up Start Meeting parameter
+                //                    let startMeetingParameters = MobileRTCMeetingStartParam4LoginlUser()
+                let startMeetingParameters = MobileRTCMeetingStartParam4WithoutLoginUser()
+//                let startMeetingParameters = MobileRTCMeetingStartParam4LoginlUser()
+                
+//                startMeetingParameters.userType = MobileRTCUserType.apiUser
+//                
+//                
+//                
+                startMeetingParameters.meetingNumber = arguments["meetingId"]!!
+//                print("CURRENT MEETING NUMBER \(startMeetingParameters.meetingNumber)")
+                startMeetingParameters.userName = arguments["userId"]!!
+//                print("CURRENT USER ID \(startMeetingParameters.userName)")
+//                //                startMeetingParameters.userID = ""
+                startMeetingParameters.zak = arguments["zoomAccessToken"]!!
+//                print("CURRENT ZAK \(startMeetingParameters.zak)")
+
+                
+               
+                
+                //Starting the meeting and storing the response
+                
+                let response = meetingService?.startMeeting(with: startMeetingParameters)
+                
+                if let response = response {
+                    print("Got response from start: \(response)")
+                }
+                result(["MEETING SUCCESS", "200"])
+                
             } else {
                 result(["SDK ERROR", "001"])
             }

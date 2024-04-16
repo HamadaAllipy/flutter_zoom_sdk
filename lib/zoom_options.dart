@@ -155,6 +155,8 @@ class ZoomMeetingOptions {
   String? disableDialIn;
 
   /// Disable Dial In Mode
+  /// Disable Dial In Mode
+  String? disableMinimizeMeeting;
   String? disableDrive;
 
   /// Disable Drive In Mode
@@ -179,7 +181,7 @@ class ZoomMeetingOptions {
   String? zoomToken;
 
   /// Zoom token for SDK
-  String? zoomAccessToken;
+  String? zakToken;
 
   /// Zoom access token for SDK
   String? jwtAPIKey;
@@ -203,7 +205,7 @@ class ZoomMeetingOptions {
     this.viewOptions,
     this.noAudio,
     this.zoomToken,
-    this.zoomAccessToken,
+    this.zakToken,
     this.jwtAPIKey,
     this.jwtSignature,
   });
