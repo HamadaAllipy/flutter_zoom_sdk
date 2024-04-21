@@ -286,7 +286,7 @@ public class FlutterZoomSdkPlugin implements FlutterPlugin, MethodChannel.Method
     Log.d(TAG, "displayName, " + options.get("userId"));
     Log.d(TAG, "meetingNo, " + options.get("meetingId"));
 
-    params.zoomAccessToken = options.get("zoomAccessToken");
+//    params.zoomAccessToken = options.get("zoomAccessToken");
 
 
     params.userType = MeetingService.USER_TYPE_SSO;
