@@ -226,27 +226,15 @@ public class SwiftFlutterZoomSdkPlugin: NSObject, FlutterPlugin,FlutterStreamHan
                     meetingSettings?.meetingPasswordHidden = true
                 }
                 
-                //Setting up Start Meeting parameter
-                //                    let startMeetingParameters = MobileRTCMeetingStartParam4LoginlUser()
-                let startMeetingParameters = MobileRTCMeetingStartParam4WithoutLoginUser()
-//                let startMeetingParameters = MobileRTCMeetingStartParam4LoginlUser()
-                
-//                startMeetingParameters.userType = MobileRTCUserType.apiUser
-//                
-//                
-//                
-                startMeetingParameters.meetingNumber = arguments["meetingId"]!!
-//                print("CURRENT MEETING NUMBER \(startMeetingParameters.meetingNumber)")
-                startMeetingParameters.userName = arguments["userId"]!!
-//                print("CURRENT USER ID \(startMeetingParameters.userName)")
-//                //                startMeetingParameters.userID = ""
-                startMeetingParameters.zak = arguments["zoomAccessToken"]!!
-//                print("CURRENT ZAK \(startMeetingParameters.zak)")
 
-                
-               
-                
-                //Starting the meeting and storing the response
+                let startMeetingParameters = MobileRTCMeetingStartParam4WithoutLoginUser()
+  
+                startMeetingParameters.meetingNumber = arguments["meetingId"]!!
+
+                startMeetingParameters.userName = arguments["userId"]!!
+                startMeetingParameters.zak = arguments["zoomAccessToken"]!!
+
+
                 
                 let response = meetingService?.startMeeting(with: startMeetingParameters)
                 
