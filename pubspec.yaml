@@ -12,10 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
   plugin_platform_interface: ^2.1.8
-  crypto: ^3.0.3
+#  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_lints: ^3.0.2
@@ -30,6 +28,3 @@ flutter:
         pluginClass: FlutterZoomSdkPlugin
       ios:
         pluginClass: FlutterZoomSdkPlugin
-      web:
-        pluginClass: ZoomViewWeb
-        fileName: flutter_zoom_web.dart
