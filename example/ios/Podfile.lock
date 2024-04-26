@@ -2,27 +2,20 @@ PODS:
   - Flutter (1.0.0)
   - flutter_zoom_sdk (0.0.1):
     - Flutter
-  - record_darwin (1.0.0):
-    - Flutter
-    - FlutterMacOS
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_zoom_sdk (from `.symlinks/plugins/flutter_zoom_sdk/ios`)
-  - record_darwin (from `.symlinks/plugins/record_darwin/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_zoom_sdk:
     :path: ".symlinks/plugins/flutter_zoom_sdk/ios"
-  record_darwin:
-    :path: ".symlinks/plugins/record_darwin/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_zoom_sdk: 62caf74a6f8822790a98b2251bf7f4a7e2590057
-  record_darwin: 1f6619f2abac4d1ca91d3eeab038c980d76f1517
 
 PODFILE CHECKSUM: 982d98631411e5a9015d34e4948ef84b95878c42
 
