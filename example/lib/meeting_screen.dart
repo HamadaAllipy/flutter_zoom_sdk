@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_sdk/zoom_options.dart';
@@ -462,29 +461,5 @@ class _MeetingWidgetState extends State<MeetingWidget> {
   final String kZoomMeetingSdkKeyForJWT = 'jFmC2HUOQl6JVb_PHPXxNQ';
   final String kZoomMeetingSdkSecretForJWT = 'bDIpOXNZR6ETRiRHChnkEIMzTQqMyeys';
 
-  String generateZoomJWT() {
-    final iat = DateTime.now().millisecondsSinceEpoch ~/ 1000 - 30;
-    final exp = iat + 60 * 60 * 2;
 
-    final oPayload = {
-      'sdkKey': kZoomMeetingSdkKeyForJWT,
-      'iat': iat,
-      'exp': exp,
-      'role': 1,
-      'appKey': kZoomMeetingSdkKeyForJWT,
-      'tokenExp': iat + 60 * 60 * 2
-    };
-
-    final jwt = JWT(
-      oPayload,
-      header: {
-        'alg': 'HS256',
-        'typ': 'JWT',
-      },
-    );
-
-    final jwtToken = jwt.sign(SecretKey(kZoomMeetingSdkSecretForJWT));
-
-    return jwtToken;
-  }
 }
